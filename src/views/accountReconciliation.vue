@@ -38,18 +38,18 @@
                         <span v-if="scope.row.settlementOrderId>0">已结</span>
                     </template>
                 </GridColumn>
-                <GridColumn field='number' title='单据编号' width="140" align="center"></GridColumn>
+                <GridColumn field='orderNumber' title='单据编号' width="140" align="center"></GridColumn>
                 <GridColumn field='orderFormId' title='订单编号' width="100" align="center"></GridColumn>
                 <GridColumn field='commodityName' title='商品名称' width="220" align="left"></GridColumn>
                 <GridColumn field='wareNum' title='数量' width="50" align="center"></GridColumn>
-                <GridColumn field="cost" title='单价' width="80" align="right">
+                <GridColumn field="purchasePrice" title='单价' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.cost, '') }}
+                        {{ toMoney(scope.row.purchasePrice, '') }}
                     </template>
                 </GridColumn>
                 <GridColumn title='合计金额' width="80" align="right">
                     <template slot="body" slot-scope="scope">
-                        {{ toMoney(scope.row.cost * scope.row.wareNum, '') }}
+                        {{ toMoney(scope.row.purchasePrice * scope.row.wareNum, '') }}
                     </template>
                 </GridColumn>
                 <GridColumn title='结算金额' width="120" align="right">
@@ -57,82 +57,34 @@
                         {{ toMoney(scope.row.settlement, '') }}
                     </template>
                 </GridColumn>
-                <GridColumn field='createTime' title='递交时间' width="150" align="center"></GridColumn>
+                <GridColumn field='submitTime' title='递交时间' width="150" align="center"></GridColumn>
                 <GridColumn field='consigneeName' title='收货人' width="120" align="center"></GridColumn>
                 <GridColumn field='phone' title='手机号码' width="120" align="center"></GridColumn>
                 <GridColumn field='address' title='收货地址' width="120" align="left"></GridColumn>
-                <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center"></GridColumn>
-                <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center"></GridColumn>
-                <GridColumn field='deliveryTime' title='发货时间' align="center"></GridColumn>
+                <GridColumn field='sendType' title='送货方式' width="120" align="center">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.row.sendType ? "快递" : "送货" }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='deliveryPhone' title='送货电话' width="120" align="center">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.row.sendType ? "" : scope.row.deliveryPhone }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='logisticsCompanyName' title='物流公司' width="120" align="center">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.row.sendType ? scope.row.logisticsCompanyName : "" }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='logisticsNumber' title='物流单号' width="120" align="center">
+                    <template slot="body" slot-scope="scope">
+                        {{ scope.row.sendType ? scope.row.logisticsNumber : "" }}
+                    </template>
+                </GridColumn>
+                <GridColumn field='shippingTime' title='发货时间' width="150" align="center"></GridColumn>
+                <GridColumn field='estimatedArrivalDate' title='预计到达日期' width="120" align="center"></GridColumn>
             </DataGrid>
         </LayoutPanel>
-        <Dialog ref="sendDlg" closed
-                :title="'发货信息录入'"
-                :dialogStyle="{width:'600px',height:'500px'}"
-                bodyCls="f-column"
-                :modal="true">
-            <div class="f-full">
-                <table class="table" style="width:100%">
-                    <tbody>
-                    <tr>
-                        <td class="text-right td" style="width:30%">商品名称</td>
-                        <td class="text-left td" colspan="3" style="width:70%">{{ obj.commodityName }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right td">商品数量</td>
-                        <td class="text-left td">{{ obj.wareNum }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right td">商品单价</td>
-                        <td class="text-left td">{{ toMoney(obj.cost, '') }} 元</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right td">递交时间</td>
-                        <td class="text-left td">{{ obj.createTime }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right td">收货人</td>
-                        <td class="text-left td">{{ obj.consigneeName }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right td">手机号码</td>
-                        <td class="text-left td">{{ obj.phone }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right td">收货地址</td>
-                        <td class="text-left td">{{ obj.address }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <div class="col-12 p-t-15 p-l-15 p-r-15">
-                    <label>物流公司</label><br>
-
-                    <TextBox v-model="obj.logisticsCompanyName" class="form-control">
-                        <Addon align="right" v-if="logisticsCompanyGroup.length">
-                            <span class="textbox-icon icon-search" @click="$refs.selectLogisticsDlg.open()"></span>
-                        </Addon>
-                    </TextBox>
-                </div>
-                <div class="col-12 p-t-15 p-l-15 p-r-15">
-                    <label>物流单号</label><br>
-                    <input type="text" v-model="obj.logisticsNumber" class="form-control">
-                </div>
-            </div>
-            <div class="dialog-button">
-                <LinkButton style="width:80px" @click="save">保存</LinkButton>
-                <LinkButton style="width:80px" @click="$refs.sendDlg.close()">关闭</LinkButton>
-            </div>
-        </Dialog>
-        <Dialog ref="selectLogisticsDlg" closed
-                :title="'选择物流公司'"
-                :dialogStyle="{width:'300px',height:'500px'}"
-                bodyCls="f-column"
-                :modal="true">
-            <div class="f-full">
-                <Tree :data="logisticsCompanyGroup" @selectionChange="selectLogisticsCompany($event)"></Tree>
-            </div>
-        </Dialog>
     </Layout>
 </template>
 
@@ -151,7 +103,6 @@ export default {
             obj: {},
             timeout: null,
             filterString: '',
-            logisticsCompanyGroup: [],
             allSelected: false,
             deliveryStatus: false,
             settlementStatus: 0
@@ -162,28 +113,15 @@ export default {
     },
     created: function () {
         this.loadPage(this.pageNumber, this.pageSize);
-        this.loadLogisticsCompanyGroup();
     },
     methods: {
-        loadLogisticsCompanyGroup() {
-            let vm = this;
-            this.getData("supplierPurchaseOrder/getSupplierLogisticsCompanyGroup", {}, function (data) {
-                vm.logisticsCompanyGroup = [];
-                data.forEach(function (e) {
-                    if (e.logisticsCompanyName) {
-                        vm.logisticsCompanyGroup.push({value: e.logisticsCompanyName, text: e.logisticsCompanyName});
-                    }
-                })
-                console.log(vm.logisticsCompanyGroup);
-            })
-        },
         onPageChange(event) {
             this.loadPage(event.pageNumber, event.pageSize);
         },
         loadPage(pageNumber, pageSize) {
             this.loading = true;
             let vm = this;
-            this.$root.getData("supplierPurchaseOrder/getQuerySettlementList", {
+            this.$root.getData("orderFormItem/getQuerySettlementList", {
                 limit: pageSize,
                 offset: pageSize * (pageNumber - 1),
                 sort: "id",
@@ -214,15 +152,14 @@ export default {
             this.filterString = filterString;
             this.loadPage(this.pageNumber, this.pageSize);
         },
-        selectLogisticsCompany(obj) {
-            this.$set(this.obj, 'logisticsCompanyName', obj.text);
-            this.$refs.selectLogisticsDlg.close();
+        selectLogistics(obj) {
+            this.$set(this.obj, 'logisticsCompanyName', obj.carriers_name);
+            this.$refs.selectLogisticscompanyCom.close();
         },
         save() {
             let vm = this;
             this.getData("supplierPurchaseOrder/save", this.obj, function (data) {
                 vm.loadPage(vm.pageNumber, vm.pageSize);
-                vm.loadLogisticsCompanyGroup();
                 vm.$refs.sendDlg.close();
             })
         },

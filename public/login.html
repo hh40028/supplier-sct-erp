@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>登录</title>
+    <title>商采通ERP-供应商</title>
     <script src="./jquery.min.js"></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
     function userLogin() {
         $.ajax({
             // url: 'http://erpserver.fuservice.com/supplierUser/supplierLogin',
-            url: 'http://localhost:8080/supplierUser/supplierLogin',
+            url: 'http://116.196.112.7/supplierUser/supplierLogin',
             type: "post",
             data: {loginName: $('#loginname').val(), password: $('#password').val()},
             async: true,

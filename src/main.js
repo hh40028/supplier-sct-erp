@@ -174,7 +174,7 @@ new Vue({
     data() {
         return {
             // basePath: 'http://erpserver.fuservice.com/',
-            basePath: 'http://localhost:8080/',
+            basePath: 'http://116.196.112.7/',
             uesrObj: undefined,
             menu: {text: '首页'},
             twomenu: {},
@@ -183,7 +183,7 @@ new Vue({
     },
     created() {
         if (sessionStorage.userObj && sessionStorage.token) {
-            this.userObj = JSON.parse(sessionStorage.user);
+            this.userObj = JSON.parse(sessionStorage.userObj);
         }else{
             location.href='/login.html'
         }
